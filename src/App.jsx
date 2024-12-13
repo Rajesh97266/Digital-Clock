@@ -1,35 +1,62 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect, useMemo } from "react";
+import "./App.css";
+
+const DAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentTime, setCurrentTime] = useState("");
+
+  // Memoize the date formatting function
+  const formatCustomDate = useMemo(() => {
+    const now = new Date();
+    return `${DAYS[now.getDay()]}, ${
+      MONTHS[now.getMonth()]
+    } ${now.getDate()}, ${now.getFullYear()}`;
+  }, []);
+
+  useEffect(() => {
+    // Update time immediately on first render
+    setCurrentTime(new Date().toLocaleTimeString());
+
+    // Set up interval for updating time
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString());
+    }, 1000);
+
+    // Clean up interval on component unmount
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="digital-clock">
+      <h1>Digital Clock</h1>
+      <div className="time">{currentTime}</div>
+      <div className="date">{formatCustomDate}</div>
+    </div>
+  );
 }
 
-export default App
+export default App;
